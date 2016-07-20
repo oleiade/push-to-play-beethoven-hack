@@ -1,0 +1,142 @@
+<!DOCTYPE>
+
+<html>
+    <head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    
+    <link href='https://fonts.googleapis.com/css?family=Dancing+Script' rel='stylesheet' type='text/css'>
+	
+    <!-- polyfill -->
+	<script src="MIDI/inc/shim/Base64.js" type="text/javascript"></script>
+	<script src="MIDI/inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="MIDI/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    
+    <!-- jasmid -->
+    <script src="MIDI/inc/jasmid/replayer.js" type="text/javascript"></script>
+    <script src="MIDI/inc/jasmid/midifile.js" type="text/javascript"></script>
+    <script src="MIDI/inc/jasmid/stream.js" type="text/javascript"></script>
+    
+	<!-- midi.js package -->
+	<script src="MIDI/js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="MIDI/js/midi/gm.js" type="text/javascript"></script>
+	<script src="MIDI/js/midi/loader.js" type="text/javascript"></script>
+	<script src="MIDI/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="MIDI/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="MIDI/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+    <script src="MIDI/js/midi/player.js" type="text/javascript"></script>
+    
+	<!-- utils -->
+	<script src="MIDI/js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="MIDI/js/util/dom_request_script.js" type="text/javascript"></script>
+    
+    <!-- pusher -->
+    <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
+    
+    <style>
+        #lyrics {
+        width: 400px;
+        height: 400px;
+
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        margin: auto;
+        }    
+        
+        h1 {
+            font-size: 3em;
+            font-family: 'Dancing Script', cursive;
+            font-weight: 700;
+            text-align: center;
+            vertical-align: center;
+        }
+    </style>
+    
+</head>
+
+<body>
+
+<div id="lyrics">
+    <h1 id="word">Keep pushing that button, and make Skrillex jealous!</h1>
+</div>
+
+<script>
+var blue = "#00C8F8"
+var turquoise = "#59C4C5"
+var yellow = "#FFE33C"
+var sand = "#FBE2E4"
+var red = "#FF4C65"
+    
+document.body.style.background = blue;
+    
+var notes = [ 
+    [64, 0.5, 'Freude'], [64, 0.5, 'Freude'], [65, 0.5, 'schöner'], [67, 0.5, 'schöner'],
+    [67, 0.5, 'Götterfunken'], [65, 0.5, 'Götterfunken'], [64, 0.5, 'Götterfunken'], [62, 0.5, 'Götterfunken'],
+    [60, 0.5, 'Tochter'], [60, 0.5, 'Tochter'], [62, 0.5, 'aus'], [64, 0.5, 'Elysium'],    
+    [64, 0.75, 'Elysium'], [62, 0.25, 'Elysium'], [62, 1, 'Elysium'],
+    
+    [64, 0.5, 'Wir'], [64, 0.5, 'betreten'], [65, 0.5, 'betreten'], [67, 0.5, 'betreten'],
+    [67, 0.5, 'feuertrunken'], [65, 0.5, 'feuertrunken'], [64, 0.5, 'feuertrunken'], [62, 0.5, 'feuertrunken'],
+    [60, 0.5, 'Himmlische'], [60, 0.5, 'Himmlische'], [62, 0.5, 'Himmlische'], [64, 0.5, 'dein'],
+    [62, 0.75, 'Heiligtum'], [60, 0.25, 'Heiligtum'], [60, 1, 'Heiligtum'],
+
+    [62, 0.5, 'Deine'], [62, 0.5, 'Deine'], [64, 0.5, 'Zauber'], [60, 0.5, 'Zauber'],
+    [62, 0.5, 'binden'], [64, 0.25, 'binden'], [65, 0.25, 'binden'], [64, 0.5, 'wieder'], [60, 0.5, 'wieder'],
+    [62, 0.5, 'Was'], [64, 0.25, 'der'], [65, 0.25, 'der'], [64, 0.5, 'Mode'], [62, 0.5, 'Mode'],
+    [60, 0.5, 'Schwert'], [62, 0.5, 'geteilt'], [62, 0.5, 'geteilt'], [64, 0.5, ''],
+
+    [64, 0.5, 'Bettler'], [64, 0.5, 'Bettler'], [65, 0.5, 'werden'], [67, 0.5, 'werden'],
+    [67, 0.5, 'Feurstenbrüder'], [65, 0.5, 'Feurstenbrüder'], [64, 0.5, 'Feurstenbrüder'], [62, 0.5, 'Feurstenbrüder'],
+    [60, 0.5, 'Wo'], [60, 0.5, 'dein'], [62, 0.5, 'sanfter'], [64, 0.5, 'sanfter'],
+    [62, 0.75, 'Flügel'], [60, 0.25, 'Flügel'], [60, 1, 'weilt'],
+]
+
+var notesToColour = {
+    60: blue,
+    62: turquoise,
+    64: yellow,
+    65: sand,
+    67: red
+}
+
+    
+window.onload = function () {
+	MIDI.loadPlugin({
+		soundfontUrl: "MIDI/examples/soundfont/",
+		instrument: "acoustic_grand_piano",
+		onprogress: function(state, progress) {
+			console.log(state, progress);
+		},
+		onsuccess: function() {
+            console.log("ready to rock, ready to roll!")
+		}
+	});
+};
+
+var pusher = new Pusher('57cad681aa44cad36271', {cluster:'eu'})
+var button = pusher.subscribe('button-153');
+
+var currentNote = 0;
+
+button.bind('press', function(data) {
+    var pitch = notes[currentNote][0];
+    var duration = notes[currentNote][1];
+    var lyric = notes[currentNote][2];
+    
+    MIDI.noteOn(0, pitch, 100, 0);
+    MIDI.noteOff(0, pitch, duration);
+    
+    document.body.style.background = notesToColour[pitch];
+    document.getElementById("word").textContent = lyric
+    
+    if (currentNote == notes.length -1)
+        currentNote = 0;
+    else
+        currentNote++;
+})
+</script>
+
+</body>
